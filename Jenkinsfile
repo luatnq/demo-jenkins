@@ -9,6 +9,11 @@ pipeline {
     }
 
     stages {
+        stage('Test') {
+            steps {
+              echo "$USER"
+            }
+          }
       stage('Build') {
         steps {
           echo "$USER"
