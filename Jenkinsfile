@@ -7,28 +7,37 @@ pipeline {
     environment {
       DOCKERHUB_CREDENTIALS = credentials('docker-hub')
     }
+
     stages {
       stage('Build') {
         steps {
           sh 'docker build -t luatnq/springboot-jenkins .'
         }
       }
+
       stage('Login') {
         steps {
-          sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+          script {
+            // Retrieve Docker Hub credentials
+            def dockerHubUser = credentials('docker-hub').username
+            def dockerHubPass = credentials('docker-hub').password
+            // Login to Docker Hub
+            sh "echo $dockerHubPass | docker login -u $dockerHubUser --password-stdin"
+          }
         }
       }
+
       stage('Push') {
         steps {
           sh 'docker push luatnq/springboot-jenkins'
         }
       }
     }
+
     post {
       always {
+        // Logout from Docker Hub
         sh 'docker logout'
       }
     }
-
-
 }
