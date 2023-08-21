@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Packaging/Pushing image') {
             steps {
-                withDockerRegistry([credentialsId: 'dockerhub', url: 'https://index.docker.io/v1/']) {
+                withDockerRegistry(credentialsId: 'docker-hub', url: 'https://index.docker.io/v1/') {
                     sh 'docker build -t luatnq/springboot-jenkins .'
                     sh 'docker push luatnq/springboot-jenkins'
                 }
