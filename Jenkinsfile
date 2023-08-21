@@ -3,41 +3,32 @@ pipeline {
     tools {
         maven 'my-maven'
     }
+
+    environment {
+      DOCKERHUB_CREDENTIALS = credentials('docker-hub')
+    }
     stages {
-        stage('Packaging/Pushing image') {
-            steps {
-                withDockerRegistry(credentialsId: 'docker-hub', url: 'https://index.docker.io/v1/') {
-                    sh 'docker build -t luatnq/springboot-jenkins .'
-                    sh 'docker push luatnq/springboot-jenkins'
-                }
-            }
+      stage('Build') {
+        steps {
+          sh 'docker build -t luatnq/springboot-jenkins .'
         }
-        stage('Test') {
-            steps {
-                echo 'Testing..'
-            }
+      }
+      stage('Login') {
+        steps {
+          sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
         }
-        stage('Deploy Application to DEV') {
-            steps {
-                echo 'Deploying to DEV...'
-
-                // Pull the updated Docker image
-                sh 'docker pull luatnq/springboot-jenkins'
-
-                // Stop and remove the existing container (if running)
-                sh 'docker stop springboot-jenkin-container || echo "this container does not exist" '
-                sh 'docker rm springboot-jenkin-container || echo "this container does not exist"'
-
-                // Start the application container using the new image
-                sh 'docker run -d --name springboot-jenkin-container -p 8080:8080 luatnq/springboot-jenkins'
-            }
+      }
+      stage('Push') {
+        steps {
+          sh 'docker push luatnq/springboot-jenkins'
         }
+      }
     }
     post {
-        // Clean after build
-        always {
-             cleanWs()
-        }
+      always {
+        sh 'docker logout'
+      }
     }
+
 
 }
