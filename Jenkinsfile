@@ -7,13 +7,13 @@ pipeline {
     environment {
       DOCKERHUB_CREDENTIALS = credentials('docker-hub')
     }
+    node {
+      wrap([$class: 'BuildUser']) {
+        def user = env.BUILD_USER_ID
+      }
+    }
 
     stages {
-        stage('Test') {
-            steps {
-              echo "$USER"
-            }
-          }
       stage('Build') {
         steps {
           echo "$USER"
