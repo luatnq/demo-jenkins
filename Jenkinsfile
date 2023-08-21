@@ -12,7 +12,7 @@ pipeline {
       stage('Build') {
         steps {
           echo "$USER"
-          chmod +x -R ${env.WORKSPACE}
+          chmod +x -R "${env.WORKSPACE}"
           sh 'docker build -t luatnq/springboot-jenkins .'
         }
       }
