@@ -4,46 +4,18 @@ pipeline {
         maven 'my-maven'
     }
 
-    environment {
-      DOCKERHUB_CREDENTIALS = credentials('docker-hub')
-    }
-    node {
-      wrap([$class: 'BuildUser']) {
-        def user = env.BUILD_USER_ID
-      }
-    }
-
     stages {
-      stage('Build') {
-        steps {
-          echo "$USER"
-          sh 'docker build -t luatnq/springboot-jenkins .'
-        }
-      }
-
-      stage('Login') {
-        steps {
-          script {
-            // Retrieve Docker Hub credentials
-            def dockerHubUser = credentials('docker-hub').username
-            def dockerHubPass = credentials('docker-hub').password
-            // Login to Docker Hub
-            sh "echo $dockerHubPass | docker login -u $dockerHubUser --password-stdin"
-          }
-        }
-      }
-
-      stage('Push') {
-        steps {
-          sh 'docker push luatnq/springboot-jenkins'
-        }
-      }
-    }
-
-    post {
-      always {
-        // Logout from Docker Hub
-        sh 'docker logout'
-      }
+            stage('Print User Info') {
+                steps {
+                    script {
+                        def userId = env.BUILD_USER_ID
+                        if (userId) {
+                            echo "Pipline được chạy bởi: ${userId}"
+                        } else {
+                            echo "Không thể xác định người dùng đang chạy pipeline."
+                        }
+                    }
+                }
+       }
     }
 }
