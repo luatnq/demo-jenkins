@@ -8,6 +8,7 @@ pipeline {
              withDockerRegistry([credentialsId: 'dockerhub', url: 'https://index.docker.io/v1/']) {
                 sh 'docker build -t luatnq/springboot-jenkins .'
                 sh 'docker push luatnq/springboot-jenkins'
+             }
         }
         stage('Test') {
             steps {
@@ -31,10 +32,10 @@ pipeline {
         }
     }
     post {
-            // Clean after build
-            always {
-                cleanWs()
-            }
+        // Clean after build
+        always {
+             cleanWs()
+        }
     }
 
 }
