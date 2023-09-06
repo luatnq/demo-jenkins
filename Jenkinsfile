@@ -23,6 +23,17 @@ pipeline {
         }
       }
 
+      stage('Deploy Spring Boot to DEV') {
+          steps {
+             echo 'Deploying and cleaning'
+             sh 'docker image pull luatnq/springboot-jenkins'
+             sh 'docker container stop springboot-jenkins || echo "this container does not exist" '
+             sh 'docker network create dev || echo "this network exists"'
+             sh 'echo y | docker container prune '
+             sh 'docker container run -d --rm --name springboot-jenkins -p 8081:8080 --network dev luatnq/springboot-jenkins'
+          }
+      }
+
 
     }
 
