@@ -15,20 +15,8 @@ pipeline {
         }
       }
 
-      stage('Login') {
-        steps {
-          script {
-            // Retrieve Docker Hub credentials
-            def dockerHubUser = credentials('docker-hub').username
-            def dockerHubPass = credentials('docker-hub').password
-            // Login to Docker Hub
-            sh "echo $dockerHubPass | docker login -u $dockerHubUser --password-stdin"
-          }
-        }
-      }
-
-      stage('Push') {
-        steps {
+      steps {
+        withDockerRegistry(credentialsId: 'docker-hub', url: 'https://index.docker.io/v1/') {
           sh 'docker push luatnq/springboot-jenkins'
         }
       }
